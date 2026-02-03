@@ -7,6 +7,7 @@
 
 #include <drivers/uart.h>
 #include <drivers/random.h>
+#include <drivers/timer.h>
 
 #include <stdbool.h>
 #include <stdint.h>

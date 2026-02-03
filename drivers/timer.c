@@ -9,19 +9,19 @@
 
 #include <utils/Strings.h>
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
-#include <stdlib.h>
 
 
-TimerDevice * timer_init(uint8_t timer_id,
+TimerDevice * timer_init(TimerDevice *timer,
+                        uint8_t timer_id,
                         timer_mode mode, // Datatype definded in ENUM
                         timer_bitmode bitmode, // Datatype definded in ENUM
                         uint8_t prescaler)
 {
 
   // Allocate memory in the Heap for timer
-  TimerDevice *timer = (TimerDevice*)malloc(sizeof(TimerDevice));
   if (timer == NULL)
   {
     return NULL;
@@ -46,15 +46,10 @@ TimerDevice * timer_init(uint8_t timer_id,
   register_write((uint32_t)(timer->base) + TIMER_PRESCALER, prescaler);
 
   return timer;
-
 }
 
 
-void timer_deinit(TimerDevice *timer) {
-  if (timer != NULL)
-    timer_stop(timer);
-    free(timer);      // free allocated Memory
-}
+
 
 
 void timer_start(TimerDevice *timer) {
@@ -95,8 +90,28 @@ void timer_set_compare(TimerDevice *timer, uint8_t cc_channel ,uint32_t compare_
 uint32_t timer_get_frequency(TimerDevice *timer)
 {
   if (timer == NULL || timer->prescaler == 0){
-    return NULL;
+    return 0;
   }
   return TIMER_CLOCK_HZ / timer-> prescaler;
+
+}
+
+bool timer_get_event(TimerDevice *timer, uint8_t cc_channel, bool reset){
+  if (timer == NULL || timer->prescaler > 5)
+  {
+    return false;
+  }
+  uint32_t event_adress = ((uint32_t)(timer->base)+ TIMER_CC(cc_channel)) + 0x140;
+  uint32_t event_value = register_read((uint32_t)(event_adress));
+
+  if (event_value && reset)
+  {
+    register_write((uint32_t)(timer->base) + TIMER_CC(cc_channel), 0);
+  }
+
+  return event_value;
+}
+
+void timer_trigger(TimerDevice *timer) {
 
 }
