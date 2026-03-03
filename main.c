@@ -5,6 +5,9 @@
  * Thomas Vogt
  **/
 
+#include "tests/rndmTimer.h"
+
+
 #include <drivers/uart.h>
 #include <drivers/random.h>
 
@@ -27,8 +30,9 @@ int main( void )
   uart1 = uart_init( UARTE0_BASE_ADDRESS );
   uart2 = uart_init( UARTE1_BASE_ADDRESS );
 
-  Wdt_test( uart1 );
-  timer_test( uart1);
+
+  //timer_test( uart1);
+  rndmTimer_test(uart1);
 
   rng_init();
 

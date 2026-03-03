@@ -19,7 +19,7 @@ void timer_test( UartDevice * uart )
   TimerDevice * timer0 = timer_init( 0, TIMER_MODE_TIMER, TIMER_BITMODE_BITMODE_32BIT, 4 );
   TimerDevice * timer1 = timer_init( 1, TIMER_MODE_COUNT, TIMER_BITMODE_BITMODE_32BIT, 0 );
 
-  timer_set_compare( timer0, 0, 1000000 );
+  timer_set_compare( timer0, 0, 20000 );
   timer_set_clear_shortcut( timer0, 0, true ); // SHORTS not supported
 
   uart_writeString( uart, "Start Timer\n" );

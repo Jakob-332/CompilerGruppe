@@ -5,7 +5,9 @@ cmake_minimum_required( VERSION 3.22 )
 
 project( base-project-sysprog2-2026 LANGUAGES ASM C )
 
-add_executable( testApp)
+add_executable( testApp
+        tests/rndmTimer.h
+        tests/rndmTimer.c)
 
 target_sources(
   testApp
@@ -41,11 +43,18 @@ target_sources(
     utils/Strings.h
     utils/Strings.c
 
-    tests/timer_test.h
-    tests/timer_test.c
 
-    tests/wdt_test.h
-    tests/wdt_test.c )
+    tests/rndmTimer.h
+    tests/rndmTimer.c
+)
+#tests/timer_test.h
+#    tests/timer_test.c
+#
+#    tests/wdt_test.h
+#    tests/wdt_test.c
+#
+#
+#
 
 #target_compile_options( testApp PRIVATE -save-temps )
 
