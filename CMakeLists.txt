@@ -42,7 +42,8 @@ target_sources(
 
     utils/Strings.h
     utils/Strings.c
-
+        tests/wdt_test.h
+        tests/wdt_test.c
 
     tests/rndmTimer.h
     tests/rndmTimer.c
@@ -50,8 +51,7 @@ target_sources(
 #tests/timer_test.h
 #    tests/timer_test.c
 #
-#    tests/wdt_test.h
-#    tests/wdt_test.c
+
 #
 #
 #

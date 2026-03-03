@@ -85,7 +85,7 @@ UartDevice * uart_init( uint32_t baseAddress )
 
   // Enable User-Interrupt from Cortex-M0
   // ID2 ist der UART
-  register_write( Interrupt_Set_Enable, Interrupt_ID2 );
+  //register_write( Interrupt_Set_Enable, Interrupt_ID2 );
 
   return device;
 }

@@ -6,6 +6,9 @@
 #define RNDMTIMER_H
 #include <drivers/uart.h>
 
+#define TIME_SCALING_FACTOR 15000
+#define ROUND_COUNT 5
+
 void rndmTimer_test( UartDevice * uart );
 
 #endif //RNDMTIMER_H

@@ -34,11 +34,12 @@ void Wdt_test( UartDevice * const uart )
 
   for ( ;; )
   {
-    for ( char readChar = 0; readChar == 0; readChar = uart_readByte( uart ) )
+    char readChar;
+    for ( readChar = 0; readChar == 0; readChar = uart_readByte( uart ) )
     {
       ;
     }
-
+    uart_writeByte(uart,  readChar);
     uart_writeString( uart, "WDT Trigger\n" );
 
     Wdt_reloadRequest( 0 );
