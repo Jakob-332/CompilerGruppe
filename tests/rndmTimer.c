@@ -13,7 +13,7 @@ void rndmTimer_test( UartDevice * uart )
   rng_init();
 
   TimerDevice * timer0 = timer_init( 0, TIMER_MODE_TIMER, TIMER_BITMODE_BITMODE_32BIT, 16 );
-  TimerDevice * counter0 = timer_init( 1, TIMER_MODE_COUNT, TIMER_BITMODE_BITMODE_32BIT, 16 );
+  TimerDevice * counter0 = timer_init( 1, TIMER_MODE_TIMER, TIMER_BITMODE_BITMODE_32BIT, 16 );
 
 
   uint8_t randomValue = rng_getRandomValue();
@@ -41,24 +41,38 @@ void rndmTimer_test( UartDevice * uart )
       timer_capture( timer0, 1);
     }
     timer_get_event( timer0, 0, true );
+    timer_stop(timer0);
     timer_clear( timer0 );
-    uart_writeString( uart, "Fertig amchen zum Sturmabwehrschießen\n" );
+    uart_writeString( uart, "Fertig mchen zum Sturmabwehrschießen\n" );
+    timer_clear(counter0);
     timer_start(counter0);
+    timer_capture(counter0,0);
 
       char readChar;
       for ( readChar = 0; readChar == 0; readChar = uart_readByte( uart ) )
       {
         ;;
       }
+    timer_capture(counter0,1);
     timer_stop(counter0);
+
+    uint32_t start = timer_get_counter(counter0,0);
+    uint32_t stop = timer_get_counter(counter0,1);
+    uint32_t delta = (stop - start) /1000;
 
     //timer_trigger( counter0 );
     //timer_capture( counter0, 0);
-    uart_writeNumber(uart, timer_get_counter(counter0, 0));
+    uart_writeNumber(uart, start);
+    uart_writeString(uart, "\n");
+    uart_writeNumber(uart, stop);
+    uart_writeString(uart, "\n");
+    uart_writeNumber(uart, delta);
+    uart_writeString(uart, "\n");
     timer_clear(counter0);
     randomValue = rng_getRandomValue();
     scaledRandomValue = randomValue * TIME_SCALING_FACTOR;
     timer_set_compare(timer0, 0, scaledRandomValue);
+    timer_start(timer0);
 
 
   }
