@@ -16,7 +16,9 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-void init_Game();
+
+void init_Game(UartDevice * uart);
+
 const uint32_t roData[ 2] = { 1,2};
 uint32_t rwData[ 4] = { 3,4, 5, 6};
 
@@ -33,7 +35,6 @@ int main( void )
 
   //Wdt_test(uart1);
   //timer_test( uart1);
-  rndmTimer_test(uart1);
 
   extern void SysTick_init( void );
   SysTick_init();
@@ -59,10 +60,10 @@ void init_Game(UartDevice * uart)
     }else if ( readChar == 's' )
     {
       uart_writeString( uart, "Spiel gestartet\n" );
-      rndmTimer_test(uart);
+      startGame(uart);
     } else
     {
-      uart_writeString(uart, "Drücke ein \n");  //
+      uart_writeString(uart, "\033[32mDrücke [s] zum nochmal spielen!\033[31m Drücke [q] zum Verlassen.\033[0m\n");  //
     }
   }
 
