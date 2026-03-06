@@ -8,7 +8,7 @@
 
 #include "drivers/timer.h"
 
-#define TIME_SCALING_FACTOR 20000
+#define TIME_SCALING_FACTOR 5000
 #define ROUND_COUNT 5
 
 void startGame( UartDevice * uart, char difficultyLevel );

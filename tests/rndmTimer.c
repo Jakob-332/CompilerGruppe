@@ -50,16 +50,16 @@ uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counte
   const uint8_t randomValue = rng_getRandomValue();
   uint32_t offset;
   switch(difficultyLevelValue){
-    case '1': 
+    case '1':
       offset = 500;
       break;
-    case '2': 
+    case '2':
       offset = 200;
       break;
-    case '3': 
+    case '3':
       offset = 50;
       break;
-    default: 
+    default:
       offset = 300;
   }
   const uint32_t scaledRandomValue = (randomValue + offset) * TIME_SCALING_FACTOR ;
@@ -67,7 +67,7 @@ uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counte
 
 
   timer_start(timer0);
-
+  while (uart_readByte(uart) != 0) { }
   // Timer run on RNG Time
   while ( !(timer_get_event( timer0, 0, false )) && falseStart == false )
   {
@@ -105,6 +105,7 @@ uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counte
   uart_writeNumber(uart, delta);
   uart_writeString(uart, "\n");
   timer_clear(counter0);
+  while (uart_readByte(uart) != 0) { }
   return delta;
 }
 
