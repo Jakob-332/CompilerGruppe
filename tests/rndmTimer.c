@@ -20,8 +20,8 @@ void startGame( UartDevice * uart )
   int falseStartCount=0;
 
 
-  TimerDevice * timer0 = timer_init( 0, TIMER_MODE_TIMER, TIMER_BITMODE_BITMODE_32BIT, 16 );
-  TimerDevice * counter0 = timer_init( 1, TIMER_MODE_TIMER, TIMER_BITMODE_BITMODE_32BIT, 16 );
+  TimerDevice * timer0 = timer_init( 0, TIMER_MODE_TIMER, TIMER_BITMODE_BITMODE_32BIT, 4 );
+  TimerDevice * counter0 = timer_init( 1, TIMER_MODE_TIMER, TIMER_BITMODE_BITMODE_32BIT, 4 );
 
 
   for ( int roundIndex = 0; roundIndex<ROUND_COUNT; roundIndex++ )
@@ -48,12 +48,12 @@ uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counte
   char readChar;
   bool falseStart = false;
   const uint8_t randomValue = rng_getRandomValue();
-  const uint32_t scaledRandomValue = (randomValue + 200) * TIME_SCALING_FACTOR;
+  const uint32_t scaledRandomValue = (randomValue) * TIME_SCALING_FACTOR;
   timer_set_compare(timer0, 0, scaledRandomValue);
 
 
   timer_start(timer0);
-
+  while (uart_readByte(uart) != 0) { }
   // Timer run on RNG Time
   while ( !(timer_get_event( timer0, 0, false )) && falseStart == false )
   {
@@ -85,12 +85,13 @@ uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counte
 
   const uint32_t start = timer_get_counter(counter0,0);
   const uint32_t stop = timer_get_counter(counter0,1);
-  const uint32_t delta = (stop - start) / 1000;
+  const uint32_t delta = (stop - start) / 100;
 
   uart_writeString(uart, "Score: ");
   uart_writeNumber(uart, delta);
   uart_writeString(uart, "\n");
   timer_clear(counter0);
+  while (uart_readByte(uart) != 0) { }
   return delta;
 }
 
