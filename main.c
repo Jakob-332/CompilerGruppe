@@ -45,7 +45,7 @@ int main( void )
 void init_Game(UartDevice * uart)
 {
   uart_writeString(uart, "Reflexo v0.1\n");
-  uart_writeString(uart, "[s] Start ;; [h] Help ;; [q] Quittierne\n");
+  uart_writeString(uart, "[s] Start ;; [h] Help ;; [q] Quit game\n");
   for (;;)
   {
     char readChar;
@@ -59,8 +59,18 @@ void init_Game(UartDevice * uart)
       uart_writeString( uart, "Hilfe\n" );  // <------------------------------------------------ Hier Spielerklärung
     }else if ( readChar == 's' )
     {
+      char levelChar = 0;
+      uart_writeString(uart, "Wähle Schwierigkeitsgrad: [1] Leicht, [2] Mittel, [3] Schwer\n");
+      while(levelChar == 0){
+        levelChar = uart_readByte( uart );
+      
+      }
       uart_writeString( uart, "Spiel gestartet\n" );
-      startGame(uart);
+      startGame(uart, levelChar);
+    }else if ( readChar == 'q' )
+    {
+      uart_writeString( uart, "Spiel beendet\n" );
+      break;
     } else
     {
       uart_writeString(uart, "\033[32mDrücke [s] zum nochmal spielen!\033[31m Drücke [q] zum Verlassen.\033[0m\n");  //

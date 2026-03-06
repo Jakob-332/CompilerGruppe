@@ -2,7 +2,7 @@
 // Created by JBohn on 02.03.2026.
 //
 #include "rndmTimer.h"
-
+#include <limits.h>
 #include <math.h>
 #include <time.h>
 #include <drivers/timer.h>
@@ -10,7 +10,7 @@
 
 void setRandomTimer();
 
-void startGame( UartDevice * uart )
+void startGame( UartDevice * uart, char difficultyLevel )
 {
 
   uart_writeString(uart, "\033[2J\033[H"); //Clears terminal
@@ -27,7 +27,7 @@ void startGame( UartDevice * uart )
   for ( int roundIndex = 0; roundIndex<ROUND_COUNT; roundIndex++ )
   {
     printRound(uart, roundIndex);
-    const uint32_t score = playRound(uart, timer0, counter0, roundIndex);
+    const uint32_t score = playRound(uart, timer0, counter0, roundIndex, difficultyLevel);
     if (score == -1 ) {
       falseStartCount++;
       roundTime[roundIndex] = 0;
@@ -35,7 +35,7 @@ void startGame( UartDevice * uart )
       roundTime[roundIndex] = score;
     }
   }
-  printGameSummary(uart, roundTime, falseStartCount);
+  printGameSummary(uart, roundTime, falseStartCount, difficultyLevel);
 
   uart_writeString(uart, "\033[32mDrücke [s] zum nochmal spielen!\033[31m Drücke [q] zum Verlassen.\033[0m\n");
 }
@@ -44,11 +44,25 @@ void startGame( UartDevice * uart )
 
 
 
-uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counter0, int roundIndex) {
+uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counter0, int roundIndex, char difficultyLevelValue) {
   char readChar;
   bool falseStart = false;
   const uint8_t randomValue = rng_getRandomValue();
-  const uint32_t scaledRandomValue = (randomValue + 200) * TIME_SCALING_FACTOR;
+  uint32_t offset;
+  switch(difficultyLevelValue){
+    case '1': 
+      offset = 500;
+      break;
+    case '2': 
+      offset = 200;
+      break;
+    case '3': 
+      offset = 50;
+      break;
+    default: 
+      offset = 300;
+  }
+  const uint32_t scaledRandomValue = (randomValue + offset) * TIME_SCALING_FACTOR ;
   timer_set_compare(timer0, 0, scaledRandomValue);
 
 
@@ -100,16 +114,24 @@ void printRound(UartDevice * uart, uint8_t round) {
   uart_writeString(uart, "\n");
 }
 
-void printGameSummary(UartDevice * uart, const int roundTime[], int falseStartCount) {
+void printGameSummary(UartDevice * uart, const int roundTime[], int falseStartCount, char difficultyLevelValue) {
   int timeSum= 0;
+  int bestTime = INT_MAX;
   int averageTime=0;
   for (int i = 0; i<ROUND_COUNT; i++ )
   {
     timeSum = timeSum + roundTime[i];
+    if (roundTime[i] < bestTime && roundTime[i] != 0) {
+      bestTime = roundTime[i];
+    }
   }
   uart_writeString(uart, "----------------------------\n");
   uart_writeString(uart, "Gesamtpunkte: ");
   uart_writeNumber(uart, timeSum);
+  uart_writeString(uart, "\n");
+
+  uart_writeString(uart, "Beste Zeit: ");
+  uart_writeNumber(uart, bestTime);
   uart_writeString(uart, "\n");
 
   uart_writeString(uart, "Fehlversuche: ");
@@ -117,8 +139,12 @@ void printGameSummary(UartDevice * uart, const int roundTime[], int falseStartCo
   uart_writeString(uart, "\n");
 
   averageTime = timeSum / (ROUND_COUNT - falseStartCount);
-  uart_writeString(uart, "Durschnitt: ");
+  uart_writeString(uart, "Durchschnitt: ");
   uart_writeNumber(uart, averageTime);
+  uart_writeString(uart, "\n");
+
+  uart_writeString(uart, "Schwierigkeitsgrad: ");
+  uart_writeByte(uart, difficultyLevelValue);
   uart_writeString(uart, "\n");
   uart_writeString(uart, "----------------------------\n");
 }

@@ -36,14 +36,6 @@ target_sources(
     drivers/uart.h
     drivers/uart.c
     drivers/Uarte.h
-<<<<<<< HEAD
-
-    utils/Strings.h
-    utils/Strings.c
-
-    tests/timer_test.h
-    tests/timer_test.c )
-=======
     drivers/Wdt.h
     drivers/Wdt.c
     drivers/WdtRegisters.h
@@ -63,7 +55,6 @@ target_sources(
 #
 #
 #
->>>>>>> c11f89ac03b87eb87da3792d34df2d783fd6c233
 
 #target_compile_options( testApp PRIVATE -save-temps )
 
