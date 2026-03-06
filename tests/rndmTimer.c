@@ -27,6 +27,8 @@ void rndmTimer_test( UartDevice * uart )
   uint32_t scaledRandomValue = randomValue * TIME_SCALING_FACTOR;
   timer_set_compare(timer0, 0, scaledRandomValue);
 
+
+
   uart_writeString( uart, "Start der Random       +\n" );
 
   // Eigene Funktion zur Umwandlung nutzen
@@ -48,6 +50,7 @@ void rndmTimer_test( UartDevice * uart )
     // Timer run on RNG Time
     while ( !(timer_get_event( timer0, 0, false )) && falseStart == false )
     {
+      //lauflicht_effekt(uart);
       readChar = uart_readByte( uart );
       if (!(readChar == 0))
       {
@@ -125,4 +128,43 @@ void rndmTimer_test( UartDevice * uart )
   averageTime = averageTime ;
   uart_writeNumber(uart, averageTime);
   uart_writeString(uart, "\n");
+
+  //uart_writeString(uart, "\033[2J\033[H");
+  uart_writeString(uart, "\033[31mAchtung!\033[0m Alles wieder normal.\n");
+}
+
+
+
+
+
+void lauflicht_effekt(UartDevice * uart) {
+  // Vier Frames für unsere kleine Animation
+  const char* frames[] = {
+    "[ O . . . ]",
+    "[ . O . . ]",
+    "[ . . O . ]",
+    "[ . . . O ]"
+};
+
+  uart_writeString(uart, "Lauflicht startet...\n");
+
+  // Animation 5 mal wiederholen
+  for (int loop = 0; loop < 5; ++loop) {
+    for (int frame = 0; frame < 4; ++frame) {
+      // 1. Cursor an den Anfang der Zeile setzen
+      uart_writeString(uart, "\r");
+
+      // 2. Aktuellen Frame zeichnen
+      uart_writeString(uart, frames[frame]);
+
+      // 3. Kurze Pause einlegen (Delay)
+      // Da du Timer in deinem Code hast (drivers/timer.h),
+      // könntest du diese nutzen. Alternativ ein Quick-and-Dirty Busy-Wait:
+      for (volatile int delay = 0; delay < 800000; ++delay) {
+        // Warten... (Wert muss je nach Taktung des Emulators angepasst werden)
+      }
+    }
+  }
+  // Zum Schluss noch ein Zeilenumbruch, damit der nächste Text darunter steht
+  uart_writeString(uart, "\nFertig!\n");
 }

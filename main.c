@@ -44,7 +44,7 @@ int main( void )
 void init_Game(UartDevice * uart)
 {
   uart_writeString(uart, "Reflexo v0.1\n");
-  uart_writeString(uart, "[s] Start ;; [h] Help \n");
+  uart_writeString(uart, "[s] Start ;; [h] Help ;; [q] Quittierne\n");
   for (;;)
   {
     char readChar;
@@ -52,19 +52,17 @@ void init_Game(UartDevice * uart)
     {
       ;
     }
-    //uart_writeByte( uart, readChar );
-
 
     if ( readChar == 'h' )
     {
-      uart_writeString( uart, "Hilfe\n" );
+      uart_writeString( uart, "Hilfe\n" );  // <------------------------------------------------ Hier Spielerklärung
     }else if ( readChar == 's' )
     {
       uart_writeString( uart, "Spiel gestartet\n" );
       rndmTimer_test(uart);
     } else
     {
-      uart_writeString(uart, "Lies doch\n");
+      uart_writeString(uart, "Drücke ein \n");  //
     }
   }
 

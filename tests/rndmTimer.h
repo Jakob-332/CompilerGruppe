@@ -10,5 +10,6 @@
 #define ROUND_COUNT 5
 
 void rndmTimer_test( UartDevice * uart );
+void lauflicht_effekt ( UartDevice * uart );
 
 #endif //RNDMTIMER_H
