@@ -4,7 +4,8 @@ using sysbus
 
 mach create
 machine LoadPlatformDescription @${CMAKE_BINARY_DIR}/nrf52840.repl
-
+showAnalyzer uart0
+showAnalyzer uart1
 emulation CreateServerSocketTerminal 4321 "netcat_term"
 connector Connect sysbus.uart0 netcat_term
 sysbus LoadELF $bin
