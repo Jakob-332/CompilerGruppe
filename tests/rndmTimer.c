@@ -20,14 +20,18 @@ void startGame( UartDevice * uart, char difficultyLevel )
   int falseStartCount=0;
 
 
-  TimerDevice * timer0 = timer_init( 0, TIMER_MODE_TIMER, TIMER_BITMODE_BITMODE_32BIT, 16 );
-  TimerDevice * counter0 = timer_init( 1, TIMER_MODE_TIMER, TIMER_BITMODE_BITMODE_32BIT, 16 );
+  static TimerDevice * timer0 = NULL;
+  static TimerDevice * counter0 = NULL;
 
+  if(timer0 == NULL || counter0 == NULL){
+    timer0 = timer_init( 0, TIMER_MODE_TIMER, TIMER_BITMODE_BITMODE_32BIT, 16 );
+    counter0 = timer_init( 1, TIMER_MODE_TIMER, TIMER_BITMODE_BITMODE_32BIT, 16 );
+  }
 
   for ( int roundIndex = 0; roundIndex<ROUND_COUNT; roundIndex++ )
   {
     printRound(uart, roundIndex);
-    const uint32_t score = playRound(uart, timer0, counter0, roundIndex, difficultyLevel);
+    const uint32_t score = playRound(uart, timer0, counter0, roundIndex, &difficultyLevel);
     if (score == -1 ) {
       falseStartCount++;
       roundTime[roundIndex] = 0;
@@ -44,12 +48,12 @@ void startGame( UartDevice * uart, char difficultyLevel )
 
 
 
-uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counter0, int roundIndex, char difficultyLevelValue) {
+uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counter0, int roundIndex, char * difficultyLevelValue) {
   char readChar;
   bool falseStart = false;
   const uint8_t randomValue = rng_getRandomValue();
   uint32_t offset;
-  switch(difficultyLevelValue){
+  switch(*difficultyLevelValue){
     case '1': 
       offset = 500;
       break;
@@ -60,7 +64,8 @@ uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counte
       offset = 50;
       break;
     default: 
-      offset = 300;
+      offset = 200;
+      *difficultyLevelValue = '2';
   }
   const uint32_t scaledRandomValue = (randomValue + offset) * TIME_SCALING_FACTOR ;
   timer_set_compare(timer0, 0, scaledRandomValue);
@@ -78,7 +83,7 @@ uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counte
       falseStart = true;
     }
   }
-
+  timer_get_event(timer0, 0, true);
   timer_stop(timer0);
   timer_clear( timer0 );
   if (falseStart) {
