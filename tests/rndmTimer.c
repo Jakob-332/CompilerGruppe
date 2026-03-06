@@ -27,8 +27,8 @@ void startGame( UartDevice * uart, char difficultyLevel )
   for ( int roundIndex = 0; roundIndex<ROUND_COUNT; roundIndex++ )
   {
     printRound(uart, roundIndex);
-    const uint32_t score = playRound(uart, timer0, counter0, roundIndex, difficultyLevel);
-    if (score == -1 ) {
+    const uint32_t score = playRound(uart, timer0, counter0, roundIndex, &difficultyLevel);
+    if (score == 0 ) {
       falseStartCount++;
       roundTime[roundIndex] = 0;
     }else {
@@ -44,12 +44,12 @@ void startGame( UartDevice * uart, char difficultyLevel )
 
 
 
-uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counter0, int roundIndex, char difficultyLevelValue) {
+uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counter0, int roundIndex, char *difficultyLevelValue) {
   char readChar;
   bool falseStart = false;
   const uint8_t randomValue = rng_getRandomValue();
   uint32_t offset;
-  switch(difficultyLevelValue){
+  switch(*difficultyLevelValue){
     case '1':
       offset = 500;
       break;
@@ -60,6 +60,7 @@ uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counte
       offset = 50;
       break;
     default:
+      *difficultyLevelValue = '1';
       offset = 300;
   }
   const uint32_t scaledRandomValue = (randomValue + offset) * TIME_SCALING_FACTOR ;
@@ -83,7 +84,7 @@ uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counte
   timer_clear( timer0 );
   if (falseStart) {
    uart_writeString( uart, "Fehlstart\n" );
-   return -1;
+   return 0;
   }
   uart_writeString( uart, "JETZT\n" );
   timer_start(counter0);
