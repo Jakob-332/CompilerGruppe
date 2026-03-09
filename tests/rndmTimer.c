@@ -20,9 +20,13 @@ void startGame( UartDevice * uart, char difficultyLevel )
   int falseStartCount=0;
 
 
-  TimerDevice * timer0 = timer_init( 0, TIMER_MODE_TIMER, TIMER_BITMODE_BITMODE_32BIT, 16 );
-  TimerDevice * counter0 = timer_init( 1, TIMER_MODE_TIMER, TIMER_BITMODE_BITMODE_32BIT, 16 );
+  static TimerDevice * timer0 = NULL;
+  static TimerDevice * counter0 = NULL;
 
+  if(timer0 == NULL || counter0 == NULL){
+    timer0 = timer_init( 0, TIMER_MODE_TIMER, TIMER_BITMODE_BITMODE_32BIT, 16 );
+    counter0 = timer_init( 1, TIMER_MODE_TIMER, TIMER_BITMODE_BITMODE_32BIT, 16 );
+  }
 
   for ( int roundIndex = 0; roundIndex<ROUND_COUNT; roundIndex++ )
   {
@@ -50,7 +54,7 @@ uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counte
   const uint8_t randomValue = rng_getRandomValue();
   uint32_t offset;
   switch(*difficultyLevelValue){
-    case '1':
+    case '1': 
       offset = 500;
       break;
     case '2':
@@ -59,9 +63,9 @@ uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counte
     case '3':
       offset = 50;
       break;
-    default:
-      *difficultyLevelValue = '1';
-      offset = 300;
+    default: 
+      offset = 200;
+      *difficultyLevelValue = '2';
   }
   const uint32_t scaledRandomValue = (randomValue + offset) * TIME_SCALING_FACTOR ;
   timer_set_compare(timer0, 0, scaledRandomValue);
@@ -79,7 +83,7 @@ uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counte
       falseStart = true;
     }
   }
-
+  timer_get_event(timer0, 0, true);
   timer_stop(timer0);
   timer_clear( timer0 );
   if (falseStart) {
