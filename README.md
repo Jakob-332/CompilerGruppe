@@ -1,36 +1,27 @@
-Spiel Starten
+### Spiel Starten
+Das Spiel wird vollständig über das UART-Terminal bedient.
 
-Das Projekt wird über CMake kompiliert und im Renode-Emulator ausgeführt. Die Steuerung erfolgt vollständig über das angebundene UART-Terminal.
-Steuerung
+Wenn das Projekt gemäß der Anleitung eingerichtet ist, genügen ein Klick auf **Build** und anschließend auf **Debug** in der IDE, um den Emulator und das Spiel direkt zu starten.
 
-    [s] oder [ENTER] : Spiel starten
+Detaillierte Informationen zur Einrichtung (z.B. in CLion) und zur manuellen Ausführung über das Terminal findest du in den Abschnitten weiter unten.
 
-    [h] : Hilfe im Menü anzeigen
+### Steuerung
+- `[s]` oder `[ENTER]` : Spiel starten
+- `[h]` : Hilfe im Menü anzeigen
+- `[q]` : Spiel beenden
+- `[1]`, `[2]`, `[3]` : Auswahl des Schwierigkeitsgrads (Leicht, Mittel, Schwer)
+- **Beliebige Taste** : Zum Reagieren bei "JETZT!" oder als Fehlstart-Auslöser während der Wartezeit.
 
-    [q] : Spiel beenden
+### Bonusfeatures
+- **Highscore:** Die beste Reaktionszeit wird angezeigt und gespeichert.
+- **Statistik & Auswertung:** Nach einem Set von 5 Runden liefert das Spiel eine detaillierte Zusammenfassung (Beste Zeit, Durchschnittszeit, Anzahl der Fehlversuche).
+- **Schwierigkeitsstufen:** Drei Level passen das Basis-Zeitfenster für die RNG-Wartezeit an.
+- **Anti-Cheat:** Wenn die Reaktionszeit zu schnell für menschliche Fähigkeiten ist, wird diese markiert.
 
-    [1], [2], [3] : Auswahl des Schwierigkeitsgrads (Leicht, Mittel, Schwer)
-
-    Beliebige Taste : Zum Reagieren bei "JETZT!" oder als Fehlstart-Auslöser während der Wartezeit.
-
-Bonusfeatures
-
-    Highscore: die beste Reaktioonszeit wird angezeigt und gespeichert
-
-    tatistik & Auswertung: Nach einem Set von 5 Runden liefert das Spiel eine detaillierte Zusammenfassung (Beste Zeit, Durchschnittszeit, Anzahl der Fehlversuche).
-
-    Schwierigkeitsstufen: Drei Level passen das Basis-Zeitfenster für die RNG-Wartezeit an.
-
-    Anti-Cheat: Wenn die Reaktionszeit zu schnell für menschliche Fähigkeiten ist, wird diese markiert
-
-
-Zeitquelle
-
+### Zeitquelle
 Das Spiel nutzt dedizierte Hardware Timer (Timer-Peripherie) für höchste Präzision:
-
-    Timer 0: Verarbeitet die generierte Zufallszeit plus Schwierigkeits-Offset über einen Compare-Match.
-
-    Timer 1: Dient als Capture-Timer zur exakten Bestimmung der Reaktionszeit in Millisekunden (Delta zwischen Start- und Stop-Capture).
+- **Timer 0:** Verarbeitet die generierte Zufallszeit plus Schwierigkeits-Offset über einen Compare-Match.
+- **Timer 1:** Dient als Capture-Timer zur exakten Bestimmung der Reaktionszeit in Millisekunden (Delta zwischen Start- und Stop-Capture).
 
 
 
