@@ -56,7 +56,18 @@ void init_Game(UartDevice * uart)
 
     if ( readChar == 'h' )
     {
-      uart_writeString( uart, "Hilfe\n" );  // <------------------------------------------------ Hier Spielerklärung
+      uart_writeString( uart, "\n--- Reflex Arena - Hilfe ---\n"
+    "Ziel: Teste deine Reaktionszeit\n\n"
+    "Ablauf:\n"
+    "1. Starte die Runde.\n"
+    "2. Warte auf das Signal \"JETZT\".\n"
+    "3. Drücke so schnell wie mölich eine beliebige Taste\n"
+    "(Wenn du zu früh drückst,  kassierts du einen Fehlversuch)\n\n"
+    "Steuerung:\n"
+    "[s] oder [ENTER] : Spiel starten\n"
+    "[h]              : Diese Hilfe anzeigen\n"
+    "[q]              : Spiel beenden\n"
+    "----------------------------\n" );  // <------------------------------------------------ Hier Spielerklärung
     }else if ( readChar == 's' )
     {
       char levelChar = 0;
