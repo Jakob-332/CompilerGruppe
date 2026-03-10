@@ -7,6 +7,8 @@
 #include <time.h>
 #include <drivers/timer.h>
 #include <drivers/random.h>
+#include <drivers/nvmc.h>
+
 
 void setRandomTimer();
 
@@ -131,9 +133,23 @@ void printGameSummary(UartDevice * uart, const int roundTime[], int falseStartCo
       bestTime = roundTime[i];
     }
   }
+
+  uint8_t difficultyInt = difficultyLevelValue - '0';
+  uint32_t current_highscore = nvmc_read_highscore(difficultyInt);
+
   uart_writeString(uart, "----------------------------\n");
   uart_writeString(uart, "Gesamtpunkte: ");
   uart_writeNumber(uart, timeSum);
+  uart_writeString(uart, "\n");
+
+  if (falseStartCount == 0 && (current_highscore == 0 || timeSum < current_highscore)) {
+      uart_writeString(uart, "NEUER HIGHSCORE! \n");
+      nvmc_write_highscore(difficultyInt, timeSum);
+      current_highscore = timeSum; // Für die Anzeige updaten
+  }
+
+  uart_writeString(uart, "All-Time Highscore: ");
+  uart_writeNumber(uart, current_highscore);
   uart_writeString(uart, "\n");
 
   uart_writeString(uart, "Beste Zeit: ");
