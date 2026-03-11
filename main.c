@@ -64,7 +64,7 @@ void init_Game(UartDevice * uart)
     "3. Drücke so schnell wie mölich eine beliebige Taste\n"
     "(Wenn du zu früh drückst,  kassierts du einen Fehlversuch)\n\n"
     "Steuerung:\n"
-    "[s] oder [ENTER] : Spiel starten\n"
+    "[s] : Spiel starten\n"
     "[h]              : Diese Hilfe anzeigen\n"
     "[q]              : Spiel beenden\n"
     "----------------------------\n" );  // <------------------------------------------------ Hier Spielerklärung

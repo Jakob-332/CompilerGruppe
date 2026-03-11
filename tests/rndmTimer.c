@@ -9,11 +9,16 @@
 #include <drivers/random.h>
 #include <drivers/nvmc.h>
 
+#include "drivers/Wdt.h"
+
 
 void setRandomTimer();
 
 void startGame( UartDevice * uart, char difficultyLevel )
 {
+
+  Wdt_initialise( 100000, true, 1 );
+  Wdt_start();
 
   uart_writeString(uart, "\033[2J\033[H"); //Clears terminal
 
@@ -69,6 +74,7 @@ uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counte
       offset = 200;
       *difficultyLevelValue = '2';
   }
+  Wdt_reloadRequest( 0 );
   const uint32_t scaledRandomValue = (randomValue + offset) * TIME_SCALING_FACTOR ;
   timer_set_compare(timer0, 0, scaledRandomValue);
 
@@ -100,6 +106,7 @@ uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counte
   {
     ;;
   }
+  Wdt_reloadRequest( 0 );
 
   timer_capture(counter0,1);
   timer_stop(counter0);
