@@ -31,6 +31,8 @@ target_sources(
     drivers/random.c
     drivers/register_access.h
     drivers/register_access.c
+    drivers/nvmc.h
+    drivers/nvmc.c
     drivers/timer.h
     drivers/timer.c
     drivers/uart.h

@@ -56,7 +56,18 @@ void init_Game(UartDevice * uart)
 
     if ( readChar == 'h' )
     {
-      uart_writeString( uart, "Starte das Spiel mit der Eingabe von [s]\n Wähle ein Schwierigkeitslevel aus 1 [leicht] 3 [schwer]\n Wenn \"Jetzt\" erscheint gilt es so schnell wie möglich  ein Taste zu drücken \n" );  // <------------------------------------------------ Hier Spielerklärung
+      uart_writeString( uart, "\n--- Reflex Arena - Hilfe ---\n"
+    "Ziel: Teste deine Reaktionszeit\n\n"
+    "Ablauf:\n"
+    "1. Starte die Runde.\n"
+    "2. Warte auf das Signal \"JETZT\".\n"
+    "3. Drücke so schnell wie mölich eine beliebige Taste\n"
+    "(Wenn du zu früh drückst,  kassierts du einen Fehlversuch)\n\n"
+    "Steuerung:\n"
+    "[s] : Spiel starten\n"
+    "[h]              : Diese Hilfe anzeigen\n"
+    "[q]              : Spiel beenden\n"
+    "----------------------------\n" );  // <------------------------------------------------ Hier Spielerklärung
     }else if ( readChar == 's' )
     {
       char levelChar = 0;

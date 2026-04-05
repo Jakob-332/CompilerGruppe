@@ -7,11 +7,18 @@
 #include <time.h>
 #include <drivers/timer.h>
 #include <drivers/random.h>
+#include <drivers/nvmc.h>
+
+#include "drivers/Wdt.h"
+
 
 void setRandomTimer();
 
 void startGame( UartDevice * uart, char difficultyLevel )
 {
+
+  Wdt_initialise( 100000, true, 1 );
+  Wdt_start();
 
   uart_writeString(uart, "\033[2J\033[H"); //Clears terminal
 
@@ -20,9 +27,13 @@ void startGame( UartDevice * uart, char difficultyLevel )
   int falseStartCount=0;
 
 
-  TimerDevice * timer0 = timer_init( 0, TIMER_MODE_TIMER, TIMER_BITMODE_BITMODE_32BIT, 16 );
-  TimerDevice * counter0 = timer_init( 1, TIMER_MODE_TIMER, TIMER_BITMODE_BITMODE_32BIT, 16 );
+  static TimerDevice * timer0 = NULL;
+  static TimerDevice * counter0 = NULL;
 
+  if(timer0 == NULL || counter0 == NULL){
+    timer0 = timer_init( 0, TIMER_MODE_TIMER, TIMER_BITMODE_BITMODE_32BIT, 16 );
+    counter0 = timer_init( 1, TIMER_MODE_TIMER, TIMER_BITMODE_BITMODE_32BIT, 16 );
+  }
 
   for ( int roundIndex = 0; roundIndex<ROUND_COUNT; roundIndex++ )
   {
@@ -50,7 +61,7 @@ uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counte
   const uint8_t randomValue = rng_getRandomValue();
   uint32_t offset;
   switch(*difficultyLevelValue){
-    case '1':
+    case '1': 
       offset = 500;
       break;
     case '2':
@@ -59,10 +70,11 @@ uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counte
     case '3':
       offset = 50;
       break;
-    default:
-      *difficultyLevelValue = '1';
-      offset = 300;
+    default: 
+      offset = 200;
+      *difficultyLevelValue = '2';
   }
+  Wdt_reloadRequest( 0 );
   const uint32_t scaledRandomValue = (randomValue + offset) * TIME_SCALING_FACTOR ;
   timer_set_compare(timer0, 0, scaledRandomValue);
 
@@ -79,7 +91,7 @@ uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counte
       falseStart = true;
     }
   }
-
+  timer_get_event(timer0, 0, true);
   timer_stop(timer0);
   timer_clear( timer0 );
   if (falseStart) {
@@ -94,6 +106,7 @@ uint32_t playRound(UartDevice * uart, TimerDevice * timer0, TimerDevice * counte
   {
     ;;
   }
+  Wdt_reloadRequest( 0 );
 
   timer_capture(counter0,1);
   timer_stop(counter0);
@@ -127,9 +140,23 @@ void printGameSummary(UartDevice * uart, const int roundTime[], int falseStartCo
       bestTime = roundTime[i];
     }
   }
+
+  uint8_t difficultyInt = difficultyLevelValue - '0';
+  uint32_t current_highscore = nvmc_read_highscore(difficultyInt);
+
   uart_writeString(uart, "----------------------------\n");
   uart_writeString(uart, "Gesamtpunkte: ");
   uart_writeNumber(uart, timeSum);
+  uart_writeString(uart, "\n");
+
+  if (falseStartCount == 0 && (current_highscore == 0 || timeSum < current_highscore)) {
+      uart_writeString(uart, "NEUER HIGHSCORE! \n");
+      nvmc_write_highscore(difficultyInt, timeSum);
+      current_highscore = timeSum; // Für die Anzeige updaten
+  }
+
+  uart_writeString(uart, "All-Time Highscore: ");
+  uart_writeNumber(uart, current_highscore);
   uart_writeString(uart, "\n");
 
   uart_writeString(uart, "Beste Zeit: ");
