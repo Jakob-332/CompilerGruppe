@@ -7,7 +7,6 @@
 
 #include "tests/rndmTimer.h"
 
-
 #include <drivers/uart.h>
 #include <drivers/random.h>
 
@@ -26,16 +25,18 @@ uint32_t bssData[ 8];
 
 UartDevice * uart1;
 
-
 int main( void )
 {
+  // UART für die Kommunikation über das Terminal einrichten
   uart1 = uart_init( UARTE0_BASE_ADDRESS );
 
+  // Hauptmenü des Spiels laden
   init_Game(uart1);
 
   //Wdt_test(uart1);
   //timer_test( uart1);
 
+  // System-Tick initialisieren, damit Zeiten im Hintergrund weiterlaufen
   extern void SysTick_init( void );
   SysTick_init();
 
@@ -44,16 +45,22 @@ int main( void )
 
 void init_Game(UartDevice * uart)
 {
+  // Begrüßungstext und Steuerungs-Übersicht anzeigen
   uart_writeString(uart, "Reflexo v0.1\n");
   uart_writeString(uart, "[s] Start ;; [h] Help ;; [q] Quit game\n");
+
+  // Endlosschleife für das Hauptmenü
   for (;;)
   {
     char readChar;
+
+    // Warten, bis der Spieler eine Taste drückt
     for ( readChar = 0; readChar == 0; readChar = uart_readByte( uart ) )
     {
       ;
     }
 
+    // Eingabe auswerten: Hilfe anzeigen
     if ( readChar == 'h' )
     {
       uart_writeString( uart, "\n--- Reflex Arena - Hilfe ---\n"
@@ -67,29 +74,32 @@ void init_Game(UartDevice * uart)
     "[s] : Spiel starten\n"
     "[h]              : Diese Hilfe anzeigen\n"
     "[q]              : Spiel beenden\n"
-    "----------------------------\n" );  // <------------------------------------------------ Hier Spielerklärung
-    }else if ( readChar == 's' )
+    "----------------------------\n" );
+    }
+    // Eingabe auswerten: Spiel starten
+    else if ( readChar == 's' )
     {
       char levelChar = 0;
+
+      // Schwierigkeitsgrad abfragen
       uart_writeString(uart, "Wähle Schwierigkeitsgrad: [1] Leicht, [2] Mittel, [3] Schwer\n");
       while(levelChar == 0){
         levelChar = uart_readByte( uart );
-      
       }
+
       uart_writeString( uart, "Spiel gestartet\n" );
       startGame(uart, levelChar);
-    }else if ( readChar == 'q' )
+    }
+    // Eingabe auswerten: Spiel beenden
+    else if ( readChar == 'q' )
     {
       uart_writeString( uart, "Spiel beendet\n" );
-      break;
-    } else
+      break; // Raus aus der Endlosschleife
+    }
+    // Falsche Taste gedrückt
+    else
     {
       uart_writeString(uart, "\033[32mDrücke [s] zum nochmal spielen!\033[31m Drücke [q] zum Verlassen.\033[0m\n");  //
     }
   }
-
-
-
-
-
 }
