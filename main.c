@@ -18,10 +18,10 @@
 
 void init_Game(UartDevice * uart);
 
-const uint32_t roData[ 2] = { 1,2};
-uint32_t rwData[ 4] = { 3,4, 5, 6};
+//const uint32_t roData[ 2] = { 1,2};
+//uint32_t rwData[ 4] = { 3,4, 5, 6};
 
-uint32_t bssData[ 8];
+//uint32_t bssData[ 8];
 
 UartDevice * uart1;
 
@@ -46,7 +46,7 @@ int main( void )
 void init_Game(UartDevice * uart)
 {
   // Begrüßungstext und Steuerungs-Übersicht anzeigen
-  uart_writeString(uart, "Reflexo v0.1\n");
+  uart_writeString(uart, "Reflexo v1.2\n");
   uart_writeString(uart, "[s] Start ;; [h] Help ;; [q] Quit game\n");
 
   // Endlosschleife für das Hauptmenü
