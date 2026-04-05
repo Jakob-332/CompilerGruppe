@@ -56,7 +56,7 @@ void init_Game(UartDevice * uart)
 
     if ( readChar == 'h' )
     {
-      uart_writeString( uart, "Hilfe\n" );  // <------------------------------------------------ Hier Spielerklärung
+      uart_writeString( uart, "Starte das Spiel mit der Eingabe von [s]\n Wähle ein Schwierigkeitslevel aus 1 [leicht] 3 [schwer]\n Wenn \"Jetzt\" erscheint gilt es so schnell wie möglich  ein Taste zu drücken \n" );  // <------------------------------------------------ Hier Spielerklärung
     }else if ( readChar == 's' )
     {
       char levelChar = 0;
